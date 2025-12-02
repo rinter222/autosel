@@ -1,0 +1,9 @@
+User-agent: *
+Disallow: /404.html
+Disallow: /images/
+
+Allow: /
+
+Sitemap: 
+
+Host autosel.web-prj.ru
