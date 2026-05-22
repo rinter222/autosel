@@ -1,15 +1,7 @@
 <?php
-/**
- * Файл подключения к базе данных и работы с пользователями
- * Использует config.php для параметров подключения
- */
 
 require_once __DIR__ . '/config.php';
 
-/**
- * Получение соединения с базой данных
- * @return mysqli|null
- */
 function getDbConnection() {
     static $conn = null;
     
@@ -28,15 +20,6 @@ function getDbConnection() {
     return $conn;
 }
 
-/**
- * Регистрация нового пользователя
- * 
- * @param string $username Имя пользователя
- * @param string $email Email
- * @param string $password Пароль
- * @param string $user_group Группа пользователя (по умолчанию 'group2')
- * @return array ['success' => bool, 'message' => string, 'user_id' => int|null]
- */
 function registerUser($username, $email, $password, $user_group = 'group2') {
     $conn = getDbConnection();
     
@@ -47,8 +30,7 @@ function registerUser($username, $email, $password, $user_group = 'group2') {
             'user_id' => null
         ];
     }
-    
-    // Проверка на существующий username
+
     $stmt = $conn->prepare("SELECT id FROM users WHERE username = ?");
     if (!$stmt) {
         return [
@@ -72,7 +54,6 @@ function registerUser($username, $email, $password, $user_group = 'group2') {
     }
     $stmt->close();
     
-    // Проверка на существующий email
     $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
     if (!$stmt) {
         return [
@@ -96,10 +77,8 @@ function registerUser($username, $email, $password, $user_group = 'group2') {
     }
     $stmt->close();
     
-    // Хэширование пароля
     $password_hash = password_hash($password, PASSWORD_DEFAULT);
     
-    // Вставка нового пользователя
     $stmt = $conn->prepare("INSERT INTO users (username, email, password_hash, user_group, created_at) VALUES (?, ?, ?, ?, NOW())");
     if (!$stmt) {
         return [
@@ -132,13 +111,6 @@ function registerUser($username, $email, $password, $user_group = 'group2') {
     }
 }
 
-/**
- * Авторизация пользователя
- * 
- * @param string $login Username или email
- * @param string $password Пароль
- * @return array ['success' => bool, 'user' => array|null]
- */
 function loginUser($login, $password) {
     $conn = getDbConnection();
     
@@ -149,7 +121,6 @@ function loginUser($login, $password) {
         ];
     }
     
-    // Поиск пользователя по username или email
     $stmt = $conn->prepare("SELECT id, username, email, password_hash, user_group, is_active, last_login FROM users WHERE username = ? OR email = ?");
     if (!$stmt) {
         return [
@@ -173,7 +144,6 @@ function loginUser($login, $password) {
     $user = $result->fetch_assoc();
     $stmt->close();
     
-    // Проверка активности пользователя
     if (!$user['is_active']) {
         return [
             'success' => false,
@@ -181,7 +151,6 @@ function loginUser($login, $password) {
         ];
     }
     
-    // Проверка пароля
     if (!password_verify($password, $user['password_hash'])) {
         return [
             'success' => false,
@@ -189,7 +158,6 @@ function loginUser($login, $password) {
         ];
     }
     
-    // Обновление last_login
     $stmt = $conn->prepare("UPDATE users SET last_login = NOW() WHERE id = ?");
     if ($stmt) {
         $stmt->bind_param("i", $user['id']);
@@ -197,7 +165,6 @@ function loginUser($login, $password) {
         $stmt->close();
     }
     
-    // Удаляем хэш пароля из возвращаемых данных
     unset($user['password_hash']);
     
     return [
@@ -206,11 +173,7 @@ function loginUser($login, $password) {
     ];
 }
 
-/**
- * Получение всех пользователей (без password_hash)
- * 
- * @return array Массив пользователей
- */
+
 function getAllUsers() {
     $conn = getDbConnection();
     
@@ -236,12 +199,7 @@ function getAllUsers() {
     return $users;
 }
 
-/**
- * Получение отправок контента для конкретного пользователя
- * 
- * @param int $user_id ID пользователя
- * @return array Массив отправок
- */
+
 function getUserSubmissions($user_id) {
     $conn = getDbConnection();
     
@@ -268,11 +226,7 @@ function getUserSubmissions($user_id) {
     return $submissions;
 }
 
-/**
- * Получение статистики посещений
- * 
- * @return array Статистика посещений
- */
+
 function getVisitStatistics() {
     $conn = getDbConnection();
     
@@ -284,7 +238,7 @@ function getVisitStatistics() {
         ];
     }
     
-    // Общая статистика
+  
     $result = $conn->query("SELECT COUNT(*) as total_visits, COUNT(DISTINCT ip_address) as unique_visitors FROM visit_stats");
     
     if (!$result) {
@@ -297,7 +251,7 @@ function getVisitStatistics() {
     
     $stats = $result->fetch_assoc();
     
-    // Статистика по страницам
+   
     $stmt = $conn->prepare("SELECT page_url, COUNT(*) as visits, COUNT(DISTINCT ip_address) as unique_visitors, MAX(visited_at) as last_visit FROM visit_stats GROUP BY page_url ORDER BY visits DESC");
     if (!$stmt) {
         return [
