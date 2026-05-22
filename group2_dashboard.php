@@ -3,7 +3,7 @@ require_once 'config.php';
 require_once 'db.php';
 session_start();
 
-// 🔒 Проверка доступа: только для пользователей группы 2
+
 if (!isset($_SESSION['user_id']) || $_SESSION['user_group'] !== 'group2') {
     header('Location: auth.php');
     exit();
@@ -12,13 +12,13 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_group'] !== 'group2') {
 $successMsg = '';
 $errorMsg = '';
 
-// 📩 Обработка отправки формы
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_content'])) {
     $subject = trim($_POST['subject']);
     $content = trim($_POST['content']);
     $editorEmail = trim($_POST['editor_email']);
 
-    // Валидация длины текста (mb_strlen для корректного учёта кириллицы)
+
     $contentLength = mb_strlen($content);
     
     if ($contentLength < 500) {
@@ -28,13 +28,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_content'])) {
     } elseif (empty($subject)) {
         $errorMsg = 'Ошибка: укажите тему материала';
     } else {
-        // 🔗 Подключение к БД и сохранение данных
         $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
         
         if ($conn->connect_error) {
             $errorMsg = 'Ошибка подключения к базе данных';
         } else {
-            // Подготовленный запрос (защита от SQL-инъекций)
             $stmt = $conn->prepare("
                 INSERT INTO content_submissions 
                 (user_id, subject, content_text, editor_email, status, submitted_at) 
@@ -46,7 +44,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_content'])) {
                 
                 if ($stmt->execute()) {
                     $successMsg = 'Материал успешно отправлен редактору на проверку!';
-                    // Очистка формы после успешной отправки
                     $_POST = [];
                 } else {
                     $errorMsg = 'Ошибка при сохранении в базу данных: ' . $stmt->error;
@@ -60,7 +57,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_content'])) {
     }
 }
 
-// 📜 Получение истории отправок текущего пользователя
 $history = [];
 $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 if (!$conn->connect_error) {
@@ -92,7 +88,6 @@ if (!$conn->connect_error) {
     <title>Отправка материала - Autosel</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Встроенные стили для страницы группы 2 */
         body {
             background-color: #f8f9fa;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -364,7 +359,6 @@ if (!$conn->connect_error) {
 </head>
 <body>
 
-    <!-- Шапка сайта -->
     <header class="dashboard-header">
         <div class="header-content">
             <div class="logo">Autosel</div>
@@ -381,7 +375,6 @@ if (!$conn->connect_error) {
     <main class="main-container">
         <h1 class="page-title">Отправка материала на проверку редактору</h1>
 
-        <!-- Сообщения об успехе/ошибке -->
         <?php if ($successMsg): ?>
             <div class="alert alert-success"><?php echo htmlspecialchars($successMsg); ?></div>
         <?php endif; ?>
@@ -389,7 +382,6 @@ if (!$conn->connect_error) {
             <div class="alert alert-error"><?php echo htmlspecialchars($errorMsg); ?></div>
         <?php endif; ?>
 
-        <!-- Форма отправки контента -->
         <div class="submission-form">
             <form method="POST" action="" id="submissionForm">
                 <div class="form-group">
@@ -436,7 +428,6 @@ if (!$conn->connect_error) {
             </form>
         </div>
 
-        <!-- История отправок -->
         <h2 class="section-title">История отправок</h2>
         
         <?php if (!empty($history)): ?>
@@ -486,7 +477,6 @@ if (!$conn->connect_error) {
     </footer>
 
     <script>
-        // ⚡ Подсчет символов в textarea в реальном времени
         document.addEventListener('DOMContentLoaded', function() {
             const textarea = document.getElementById('content');
             const counter = document.getElementById('charCounter');
@@ -497,10 +487,9 @@ if (!$conn->connect_error) {
             function updateCounter() {
                 const currentLength = textarea.value.length;
                 
-                // Обновляем текст счетчика
                 counter.textContent = `Введено символов: ${currentLength} / ${maxLength}`;
                 
-                // Подсветка предупреждения, если меньше минимума
+
                 if (currentLength < minLength) {
                     counter.classList.add('warning');
                     counter.textContent += ` (нужно ещё ${minLength - currentLength})`;
@@ -508,17 +497,13 @@ if (!$conn->connect_error) {
                     counter.classList.remove('warning');
                 }
                 
-                // Блокировка кнопки отправки, если текст слишком короткий
                 submitBtn.disabled = (currentLength < minLength || currentLength > maxLength);
             }
 
-            // Слушаем ввод текста
             textarea.addEventListener('input', updateCounter);
             
-            // Инициализация при загрузке
             updateCounter();
 
-            // Дополнительная валидация перед отправкой формы
             document.getElementById('submissionForm').addEventListener('submit', function(e) {
                 const length = textarea.value.length;
                 
