@@ -8,18 +8,16 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_group'] !== 'group1') {
     exit();
 }
 
-// Получаем данные из БД
+
 $users = getAllUsers();
 $stats = getVisitStatistics();
 
-// Гарантируем сортировку по дате регистрации (DESC), если db.php не делает этого
 if (is_array($users)) {
     usort($users, function($a, $b) {
         return strtotime($b['created_at']) - strtotime($a['created_at']);
     });
 }
 
-// Функция проверки статуса онлайн (последний вход < 5 минут)
 function isUserOnline($lastLogin) {
     if (!$lastLogin) return false;
     $lastTime = strtotime($lastLogin);
@@ -66,8 +64,6 @@ $pages = $stats['pages'] ?? [];
     </style>
 </head>
 <body>
-
-    <!-- Шапка сайта (адаптирована под ваш шаблон) -->
     <header style="background: #333; color: #fff; padding: 1rem 0;">
         <div style="max-width: 1200px; margin: 0 auto; padding: 0 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
             <div style="font-size: 1.5rem; font-weight: bold;">Autosel</div>
@@ -86,7 +82,6 @@ $pages = $stats['pages'] ?? [];
             <a href="logout.php" class="btn-logout" style="margin:0;">Выйти</a>
         </div>
 
-        <!-- Блок общей статистики -->
         <div class="stats-grid">
             <div class="stat-card">
                 <h3><?php echo number_format($totalVisits); ?></h3>
@@ -102,7 +97,6 @@ $pages = $stats['pages'] ?? [];
             </div>
         </div>
 
-        <!-- Блок "Список всех пользователей" -->
         <h2 class="section-title">Список всех пользователей</h2>
         <div class="table-container">
             <table>
@@ -139,7 +133,6 @@ $pages = $stats['pages'] ?? [];
             </table>
         </div>
 
-        <!-- Блок "Статистика посещений" -->
         <h2 class="section-title">Статистика посещений</h2>
         <div class="table-container">
             <table>
