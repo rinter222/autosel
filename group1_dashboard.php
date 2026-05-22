@@ -34,34 +34,6 @@ $pages = $stats['pages'] ?? [];
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Панель администратора - Статистика сайта</title>
     <link rel="stylesheet" href="style.css">
-    <style>
-        /* Стили только для дашборда (не конфликтуют с style.css) */
-        .dashboard-wrapper { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; font-family: sans-serif; }
-        .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 2px solid #333; padding-bottom: 1rem; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem; }
-        .stat-card { background: #f8f9fa; padding: 1.5rem; border-radius: 8px; text-align: center; border: 1px solid #e0e0e0; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .stat-card h3 { margin: 0; font-size: 2.2rem; color: #2c3e50; }
-        .stat-card p { margin: 0.5rem 0 0; color: #6c757d; font-size: 0.95rem; }
-        .section-title { margin: 2rem 0 1rem; color: #333; border-left: 4px solid #007bff; padding-left: 0.8rem; }
-        .table-container { overflow-x: auto; background: #fff; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        table { width: 100%; border-collapse: collapse; min-width: 600px; }
-        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid #eee; }
-        th { background: #f1f3f5; font-weight: 600; color: #495057; }
-        tr:hover { background: #f8f9fa; }
-        .status-online { color: #28a745; font-weight: 600; }
-        .status-offline { color: #6c757d; }
-        .progress-cell { width: 25%; }
-        .progress-bg { background: #e9ecef; height: 6px; border-radius: 3px; overflow: hidden; width: 100%; }
-        .progress-fill { height: 100%; background: #007bff; transition: width 0.3s ease; }
-        .progress-text { font-size: 0.85rem; color: #6c757d; margin-top: 4px; display: block; }
-        .btn-logout { display: inline-block; margin-top: 2rem; padding: 0.8rem 1.8rem; background: #dc3545; color: #fff; text-decoration: none; border-radius: 5px; font-weight: 500; transition: background 0.2s; }
-        .btn-logout:hover { background: #c82333; }
-        .user-greeting { color: #495057; font-weight: 500; }
-        @media (max-width: 768px) {
-            .dashboard-header { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
-            th, td { padding: 0.7rem 0.5rem; font-size: 0.9rem; }
-        }
-    </style>
 </head>
 <body>
     <header style="background: #333; color: #fff; padding: 1rem 0;">
