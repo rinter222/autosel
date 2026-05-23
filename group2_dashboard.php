@@ -1,4 +1,5 @@
 <?php
+define('APP_INIT', true);
 require_once 'config.php';
 require_once 'db.php';
 session_start();
@@ -21,8 +22,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_content'])) {
 
     $contentLength = mb_strlen($content);
     
-    if ($contentLength < 500) {
-        $errorMsg = 'Ошибка: текст должен содержать минимум 500 символов (сейчас: ' . $contentLength . ')';
+    if ($contentLength < 10) {
+        $errorMsg = 'Ошибка: текст должен содержать минимум 10 символов (сейчас: ' . $contentLength . ')';
     } elseif ($contentLength > 10000) {
         $errorMsg = 'Ошибка: текст не должен превышать 10000 символов';
     } elseif (empty($subject)) {
@@ -94,11 +95,31 @@ if (!$conn->connect_error) {
         <div class="header-content">
             <div class="logo">Autosel</div>
             <nav>
-                <a href="index.html">Главная</a>
-                <a href="about.html">О нас</a>
-                <a href="contacts.html">Контакты</a>
-                <span style="color: #666;">|</span>
-                <span class="user-info">👤 <?php echo htmlspecialchars($_SESSION['username']); ?> (Группа 2)</span>
+                <a href="index.php" class="active">Главная</a>
+                <a href="about.php">О нас</a>
+                <a href="contacts.php">Контакты</a>
+                <a href="promotions.php">Акции</a>
+                
+                <?php if (isset($_SESSION['user_id'])): ?>
+                    <!-- Пользователь авторизован -->
+                    <?php if ($_SESSION['user_group'] === 'group1'): ?>
+                        <a href="group1_dashboard.php" style="background: linear-gradient(45deg, #ffd700, #ff8c00); color: #1a2a6c;">
+                            📊 Панель управления
+                        </a>
+                    <?php elseif ($_SESSION['user_group'] === 'group2'): ?>
+                        <a href="group2_dashboard.php" style="background: linear-gradient(45deg, #ffd700, #ff8c00); color: #1a2a6c;">
+                            ✍️ Отправить материал
+                        </a>
+                    <?php endif; ?>
+                    
+                    <span style="color: #ffd700;">👤 <?php echo htmlspecialchars($_SESSION['username']); ?></span>
+                    <a href="logout.php" style="background: rgba(220, 53, 69, 0.8);">Выйти</a>
+                <?php else: ?>
+                    <!-- Пользователь не авторизован -->
+                    <a href="auth.php" style="background: linear-gradient(45deg, #ffd700, #ff8c00); color: #1a2a6c;">
+                        🔐 Войти
+                    </a>
+                <?php endif; ?>
             </nav>
         </div>
     </header>
@@ -130,12 +151,12 @@ if (!$conn->connect_error) {
                     <label for="content">Текст материала *</label>
                     <textarea id="content" 
                               name="content" 
-                              placeholder="Ваш материал (минимум 500 символов)..." 
+                              placeholder="Ваш материал (минимум 10 символов)..." 
                               required 
-                              minlength="500" 
+                              minlength="10" 
                               maxlength="10000"><?php echo isset($_POST['content']) ? htmlspecialchars($_POST['content']) : ''; ?></textarea>
                     <span class="char-counter" id="charCounter">Введено символов: 0 / 10000</span>
-                    <small class="form-hint">* Минимальная длина: 500 символов. Максимальная: 10000</small>
+                    <small class="form-hint">* Минимальная длина: 10 символов. Максимальная: 10000</small>
                 </div>
 
                 <div class="form-group">
@@ -143,7 +164,7 @@ if (!$conn->connect_error) {
                     <input type="email" 
                            id="editor_email" 
                            name="editor_email" 
-                           value="redakciya@autosel.local" 
+                           value="admin@autosel.local" 
                            required>
                     <small class="form-hint">Материал будет сохранён в базе для проверки редактором</small>
                 </div>
@@ -151,11 +172,6 @@ if (!$conn->connect_error) {
                 <button type="submit" name="submit_content" class="btn-submit" id="submitBtn">
                     Отправить на проверку
                 </button>
-                
-                <p style="margin-top: 1rem; font-size: 0.85rem; color: #6c757d;">
-                    ℹ️ Согласно заданию, почтовый сервер не настраивается. 
-                    Данные сохраняются в базу данных для последующей проверки редактором.
-                </p>
             </form>
         </div>
 
@@ -212,7 +228,7 @@ if (!$conn->connect_error) {
             const textarea = document.getElementById('content');
             const counter = document.getElementById('charCounter');
             const submitBtn = document.getElementById('submitBtn');
-            const minLength = 500;
+            const minLength = 10;
             const maxLength = 10000;
 
             function updateCounter() {
@@ -253,5 +269,6 @@ if (!$conn->connect_error) {
             });
         });
     </script>
+    <script src="counter.js"></script>
 </body>
 </html>

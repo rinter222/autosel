@@ -1,6 +1,5 @@
 <?php
-// auth.php - Регистрация и авторизация пользователей
-
+define('APP_INIT', true);
 require_once 'config.php';
 require_once 'db.php';
 
@@ -87,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 exit;
             } else {
                 incrementLoginAttempt();
-                $errors[] = $result['message'];
+                $errors[] = 'Неправильный логин или пароль';
             }
         }
     }
@@ -268,17 +267,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     </style>
 </head>
 <body>
-    <?php include 'header.php'; ?>
-    
     <main class="container">
         <div class="auth-container">
             <h1 style="text-align: center; margin-bottom: 30px;">Личный кабинет</h1>
-            
+
             <?php if (!empty($errors)): ?>
                 <div class="error-message">
-                    <?php foreach ($errors as $error): ?>
-                        <p><?php echo htmlspecialchars($error); ?></p>
-                    <?php endforeach; ?>
+                    <ul style="margin: 0; padding-left: 20px;">
+                        <?php foreach ($errors as $error): ?>
+                            <?php echo htmlspecialchars($error); ?>
+                        <?php endforeach; ?>
+                    </ul>
                 </div>
             <?php endif; ?>
             
@@ -361,8 +360,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             </form>
         </div>
     </main>
-    
-    <?php include 'footer.php'; ?>
     
     <script>
         // Переключение вкладок

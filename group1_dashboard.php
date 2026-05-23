@@ -1,4 +1,5 @@
 <?php
+define('APP_INIT', true);
 require_once 'config.php';
 require_once 'db.php';
 session_start();
@@ -39,11 +40,32 @@ $pages = $stats['pages'] ?? [];
     <header style="background: #333; color: #fff; padding: 1rem 0;">
         <div style="max-width: 1200px; margin: 0 auto; padding: 0 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
             <div style="font-size: 1.5rem; font-weight: bold;">Autosel</div>
-            <nav style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
-                <a href="index.html" style="color: #fff; text-decoration: none;">Главная</a>
-                <a href="about.html" style="color: #fff; text-decoration: none;">О нас</a>
-                <a href="contacts.html" style="color: #fff; text-decoration: none;">Контакты</a>
-                <span class="user-greeting">👤 <?php echo htmlspecialchars($_SESSION['username']); ?></span>
+            <nav>
+                <a href="index.php" class="active">Главная</a>
+                <a href="about.php">О нас</a>
+                <a href="contacts.php">Контакты</a>
+                <a href="promotions.php">Акции</a>
+                
+                <?php if (isset($_SESSION['user_id'])): ?>
+                    <!-- Пользователь авторизован -->
+                    <?php if ($_SESSION['user_group'] === 'group1'): ?>
+                        <a href="group1_dashboard.php" style="background: linear-gradient(45deg, #ffd700, #ff8c00); color: #1a2a6c;">
+                            📊 Панель управления
+                        </a>
+                    <?php elseif ($_SESSION['user_group'] === 'group2'): ?>
+                        <a href="group2_dashboard.php" style="background: linear-gradient(45deg, #ffd700, #ff8c00); color: #1a2a6c;">
+                            ✍️ Отправить материал
+                        </a>
+                    <?php endif; ?>
+                    
+                    <span style="color: #ffd700;">👤 <?php echo htmlspecialchars($_SESSION['username']); ?></span>
+                    <a href="logout.php" style="background: rgba(220, 53, 69, 0.8);">Выйти</a>
+                <?php else: ?>
+                    <!-- Пользователь не авторизован -->
+                    <a href="auth.php" style="background: linear-gradient(45deg, #ffd700, #ff8c00); color: #1a2a6c;">
+                        🔐 Войти
+                    </a>
+                <?php endif; ?>
             </nav>
         </div>
     </header>
